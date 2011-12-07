@@ -40,23 +40,61 @@
         </div>
         
         <style>
+<<<<<<< HEAD
         div.social-stream { }
           div.social-stream ul li { float:left; list-style:none; }
             div.social-stream ul li a img { width:50px; height:50px; border:0; margin:0 2px; }
+=======
+        div.social-stream { height:250px; overflow:auto;}
+            div.social-stream a { }
+            div.social-stream > ul { margin-top: 15px; list-style: none; }
+              div.social-stream > ul li { display: inline; margin-right: 10px; font-weight: bold; }
+                div.social-stream > ul li.active a { color: #333; }
+              div.social-stream  ul { list-style: none; }
+                div.social-stream  ul li { display: block; margin: 5px 0; padding: 8px 0 5px; border-top: 1px solid #e6e6e4; }
+                div.social-stream  ul li.first { border-top:0; margin-top:0; padding-top:0;}
+                  div.social-stream ul li img { float: left;  }
+                  div.social-stream  ul li span { display: block; margin-left: 60px; color: #333; }
+                  div.social-stream  ul li span.info { margin-top: 10px; color: #999; }
+                    div.social-stream  ul li span a { color: #f47421; font-weight: bold; }
+                    div.social-stream  ul li span a:hover { text-decoration: underline; }
+>>>>>>> parent of 9b7a6fa... corrigindo texto na pagina de multimia e alterando para mostrar painel de seguidores nas redes sociais em apoiadores
         </style>
         
         <h3>No Twitter</h3>
         
         <div class="social-stream">
+        <?php $updates = evd_social_all(15,15); ?>
+
+        <?php if (count($updates) > 0) : ?>
         <ul>
-        <?php $updates = evd_twitter_followers();
-        foreach($updates as $up) {
-          foreach ($up as $up_details) {
-            printf('<li><a href="%s"><img src="%s" alt="%s"</a></li>', 'http://twitter.com/'.$up_details->screen_name, $up_details->profile_image_url, $up_details->name);
-          }
-        }
-         ?>
-         </ul>
+          <?php $i = 1; foreach ($updates as $update) : ?>
+          <li class="<?php if ($i == 1) : ?>first<?php elseif ($i == count($updates)) : ?>last<?php endif; ?>">
+            <?php if (!empty($update->created_at)) : ?>
+            <a href="http://www.twitter.com/<?php echo $update->from_user; ?>" title="<?php echo $update->from_user; ?>"><img src="<?php echo $update->profile_image_url; ?>" alt="<?php echo $update->from_user; ?>" /></a>
+            <span>
+              <?php echo $update->text; ?>
+            </span>
+            <span class="info"><?php echo mysql2date('d/M', $update->created_at); ?> | via Twitter</span>
+            <?php else : ?>
+            <a href="http://www.facebook.com/profile.php?id=<?php echo $update->from->id; ?>" title="<?php echo $update->from->name; ?>"><img src="http://graph.facebook.com/<?php echo $update->from->id; ?>/picture" alt="<?php echo $update->from->name; ?>" /></a>
+            <span>
+              <?php if (!empty($update->message)) : ?>
+              <?php echo $update->message; ?>
+              <?php else : ?>
+              <?php if (!empty($update->name)) echo $update->name ?> <?php echo $update->description; ?>
+              <?php endif; ?>
+            </span>
+            <span class="info"><?php echo mysql2date('d/M', $update->created_time); ?> | via Facebook</span>
+            <?php endif; ?>
+          </li>
+          <?php $i++; endforeach; ?>
+        </ul>
+        <?php else : ?>
+        <ul>
+          <li>Ops! Parece que não conseguimos nos conectar ao <strong>Twitter</strong>...</li>
+        </ul>
+        <?php endif; ?>
         </div>
       </article>
       <?php get_sidebar(); ?>
